@@ -1,0 +1,9 @@
+body { 
+    padding-top: 70px; 
+}
+
+.footer {
+    border-top: 2px inset darkslategray;
+    text-align: center;
+    margin-top: 25px;
+}

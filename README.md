@@ -1,2 +1,3 @@
 # OC-WebLinks
-Activité 2 - OC Evoluez vers une architecture professionnelle
+
+Code source initial de l'activité 2 du cours OpenClassrooms "Evoluez vers une architecture PHP professionnelle".
