@@ -17,14 +17,3 @@ create table t_link (
     constraint fk_link_usr foreign key(user_id) references t_user(user_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
-create table t_comment (
-    com_id integer not null primary key auto_increment,
-    com_title varchar(125) not null,
-    com_content varchar(500) not null,
-    link_id integer not null,
-    user_id integer not null,
-    constraint fk_link_usr_comment foreign key(user_id) references t_user(user_id),
-    constraint fk_link foreign key(link_id) references t_link(link_id)
-) engine=innodb character set utf8 collate utf8_unicode_ci;
-
-

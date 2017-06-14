@@ -3,11 +3,17 @@
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
 
-// Register global error and exception handlers
+/**************************************************************\
+ *        Register global error and exception handlers        *
+\**************************************************************/
 ErrorHandler::register();
 ExceptionHandler::register();
 
-// Register service providers
+
+
+/**************************************************************\
+ *                Register service providers                  *
+\**************************************************************/
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../views',
@@ -44,8 +50,14 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
         array('^/admin', 'ROLE_ADMIN'),
     ),
 ));
+$app->register(new Silex\Provider\FormServiceProvider());
+$app->register(new Silex\Provider\LocaleServiceProvider());
+$app->register(new Silex\Provider\TranslationServiceProvider());
 
-// Register services
+
+/***************************************************************\
+*                       Register services                      *
+\***************************************************************/
 $app['dao.link'] = function ($app) {
     return new WebLinks\DAO\LinkDAO($app['db']);
 };

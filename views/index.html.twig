@@ -6,8 +6,8 @@
     {% if links %}
         <div class="list-group">
             {% for link in links %}
-                <a href="url('{{ link.url }}')" class="list-group-item">{{ link.title }}
-                    <span class="small"><a href="#">Submitted by ?</a></span>
+                <a href='{{ link.url }}' class="list-group-item">{{ link.title }}
+                    <span class="small">Submitted by ?</span>
                 </a>
             {% endfor %}
         </div>
