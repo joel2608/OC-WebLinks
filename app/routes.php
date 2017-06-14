@@ -123,3 +123,40 @@ $app->get('/admin/user/{id}/delete', function($id, Request $request) use ($app) 
     // Redirect to admin home page
     return $app->redirect($app['url_generator']->generate('admin'));
 })->bind('admin_user_delete');
+
+
+
+
+/************************************************************************\
+ *                         GESTION DE L'API                             *
+ \***********************************************************************/
+
+// API : get all links
+$app->get('/api/links', function() use ($app) {
+    $links = $app['dao.link']->findAll();
+    // Convert an array of objects ($links) into an array of associative arrays ($responseData)
+    $responseData = array();
+    foreach ($links as $link) {
+        $responseData[] = array(
+            'link_id' => $link->getId(),
+            'link_title' => $link->getTitle(),
+            'link_url' => $link->getUrl()
+        );
+    }
+    // Create and return a JSON response
+    return $app->json($responseData);
+})->bind('api_links');
+
+
+// API : get an link with details
+$app->get('/api/link/{id}', function($id) use ($app) {
+    $link = $app['dao.link']->find($id);
+    // Convert an object ($link) into an associative array ($responseData)
+    $responseData = array(
+        'link_id' => $link->getId(),
+        'link_title' => $link->getTitle(),
+        'link_url' => $link->getUrl()
+    );
+    // Create and return a JSON response
+    return $app->json($responseData);
+})->bind('api_link');
