@@ -3,6 +3,8 @@
 use Symfony\Component\HttpFoundation\Request;
 use WebLinks\Domain\Link;
 use WebLinks\Form\Type\LinkType;
+use WebLinks\Domain\User;
+use WebLinks\form\Type\UserType;
 
 // Home page
 $app->get('/', function () use ($app) {
@@ -10,12 +12,6 @@ $app->get('/', function () use ($app) {
     return $app['twig']->render('index.html.twig', array('links' => $links));
 })->bind('home');
 
-//// Link details with comments
-//$app->get('/link/{id}', function ($id) use ($app) {
-//    $link = $app['dao.link']->find($id);
-//    $comments = $app['dao.comment']->findAllByLink($id);
-//    return $app['twig']->render('link.html.twig', array('link' => $link, 'comments' => $comments));
-//})->bind('link');
 
 // Login Form - OK
 $app->get('/login', function(Request $request) use ($app) {
@@ -35,6 +31,7 @@ $app->get('/admin', function() use ($app) {
         'users' => $users));
 })->bind('admin');
 
+
 // Add a new link
 $app->match('/admin/link/add', function(Request $request) use ($app) {
     $link = new Link();
@@ -48,6 +45,7 @@ $app->match('/admin/link/add', function(Request $request) use ($app) {
         'title' => 'New link',
         'linkForm' => $linkForm->createView() ));
 })->bind('admin_link_add');
+
 
 // Edit an existing link
 $app->match('/admin/link/{id}/edit', function($id, Request $request) use ($app) {
@@ -63,6 +61,7 @@ $app->match('/admin/link/{id}/edit', function($id, Request $request) use ($app) 
         'linkForm' => $linkForm->createView() ));
 })->bind('admin_link_edit');
 
+
 // Delete a link
 $app->get('/admin/link/{id}/delete', function ($id, Request $request) use ($app) {
     // Delete the link
@@ -71,3 +70,56 @@ $app->get('/admin/link/{id}/delete', function ($id, Request $request) use ($app)
     // Redirect to admin home page
     return $app->redirect($app['url_generator']->generate('admin'));
 })->bind('admin_link_delete');
+
+// Add a user
+$app->match('/admin/user/add', function(Request $request) use ($app) {
+    $user = new User();
+    $userForm = $app['form.factory']->create(UserType::class, $user);
+    $userForm->handleRequest($request);
+    if ($userForm->isSubmitted() && $userForm->isValid()) {
+        // generate a random salt value
+        $salt = substr(md5(time()), 0, 23);
+        $user->setSalt($salt);
+        $plainPassword = $user->getPassword();
+        // find the default encoder
+        $encoder = $app['security.encoder.bcrypt'];
+        // compute the encoded password
+        $password = $encoder->encodePassword($plainPassword, $user->getSalt());
+        $user->setPassword($password);
+        $app['dao.user']->save($user);
+        $app['session']->getFlashBag()->add('success', 'The user was successfully created.');
+    }
+    return $app['twig']->render('user_form.html.twig', array(
+        'title' => 'New user',
+        'userForm' => $userForm->createView()));
+})->bind('admin_user_add');
+
+// Edit an existing user
+$app->match('/admin/user/{id}/edit', function($id, Request $request) use ($app) {
+    $user = $app['dao.user']->find($id);
+    $userForm = $app['form.factory']->create(UserType::class, $user);
+    $userForm->handleRequest($request);
+    if ($userForm->isSubmitted() && $userForm->isValid()) {
+        $plainPassword = $user->getPassword();
+        // find the encoder for the user
+        $encoder = $app['security.encoder_factory']->getEncoder($user);
+        // compute the encoded password
+        $password = $encoder->encodePassword($plainPassword, $user->getSalt());
+        $user->setPassword($password);
+        $app['dao.user']->save($user);
+        $app['session']->getFlashBag()->add('success', 'The user was successfully updated.');
+    }
+    return $app['twig']->render('user_form.html.twig', array(
+        'title' => 'Edit user',
+        'userForm' => $userForm->createView()));
+})->bind('admin_user_edit');
+
+
+// Remove a user
+$app->get('/admin/user/{id}/delete', function($id, Request $request) use ($app) {
+    // Delete the user
+    $app['dao.user']->delete($id);
+    $app['session']->getFlashBag()->add('success', 'The user was successfully removed.');
+    // Redirect to admin home page
+    return $app->redirect($app['url_generator']->generate('admin'));
+})->bind('admin_user_delete');

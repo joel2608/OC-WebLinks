@@ -52,6 +52,10 @@ class LinkDAO extends DAO
         $this->getDb()->delete('t_link', array('link_id' => $id));
     }
 
+    public function deleteAllByUser($userId) {
+        $this->getDb()->delete('t_link', array('user_id' => $userId));
+    }
+
 
     /**
      * Returns a list of all links, sorted by id.
