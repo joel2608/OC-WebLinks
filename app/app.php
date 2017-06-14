@@ -2,6 +2,7 @@
 
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**************************************************************\
  *        Register global error and exception handlers        *
@@ -53,7 +54,11 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
 $app->register(new Silex\Provider\FormServiceProvider());
 $app->register(new Silex\Provider\LocaleServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider());
-
+$app->register(new Silex\Provider\MonologServiceProvider(), array(
+    'monolog.logfile' => __DIR__.'/../var/logs/weblinks.log',
+    'monolog.name' => 'WebLinks',
+    'monolog.level' => $app['monolog.level']
+));
 
 /***************************************************************\
 *                       Register services                      *
@@ -64,11 +69,26 @@ $app['dao.link'] = function ($app) {
 $app['dao.user'] = function ($app) {
     return new WebLinks\DAO\UserDAO($app['db']);
 };
-//$app['dao.comment'] = function ($app) {
-//    $commentDAO = new WebLinks\DAO\CommentDAO($app['db']);
-//    $commentDAO->setLinkDAO($app['dao.link']);
-//    $commentDAO->setUserDAO($app['dao.user']);
-//    return $commentDAO;
-//};
+
+
+
+/***************************************************************\
+*                   Register error handler                     *
+\***************************************************************/
+$app->error(function (\Exception $e, Request $request, $code) use ($app) {
+    switch ($code) {
+        case 403:
+            $message = 'Accès refuser !';
+            break;
+        case 404:
+            $message = 'La page demandée est introuvable !';
+            break;
+        default:
+            $message = "Quelque chose ne fonctionne pas comme il faut !";
+    }
+    return $app['twig']->render('error.html.twig', array(
+        'message' => $message
+    ));
+});
 
 

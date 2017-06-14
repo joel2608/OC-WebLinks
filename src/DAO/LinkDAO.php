@@ -24,15 +24,14 @@ class LinkDAO extends DAO
         $linkData = array(
             'link_id' => $link->getId(),
             'link_title' => $link->getTitle(),
-            'link_url' => $link->getUrl(),
-            'user_id' => $link->getAuthor(),
+            'link_url'   => $link->getUrl(),
+            'user_id'    => $link->getAuthor(),
         );
 
         if($link->getId()) {
             // The link has already been saved: update it
             $this->getDb()->update('t_link', $linkData, array(
-                'link_id' => $link->getId(),
-                'user_id' => $link->getAuthor()
+                'link_id' => $link->getAuthor(),
             ));
         } else {
             // The link has never been saved : insert it
