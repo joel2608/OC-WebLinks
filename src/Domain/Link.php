@@ -26,7 +26,7 @@ class Link
     private $url;
 
     /**
-     * The link Author
+     * The link Author  = user_id
      * @var \WebLinks\Domain\User
      */
     private $author;

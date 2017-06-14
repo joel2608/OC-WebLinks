@@ -40,7 +40,7 @@ class LinkDAO extends DAO
      * @param array $row The DB row containing Link data.
      * @return \WebLinks\Domain\Link
      */
-    protected function buildDomainObject($row) {
+    protected function buildDomainObject(array $row) {
         $link = new Link();
         $link->setId($row['link_id']);
         $link->setUrl($row['link_title']);
@@ -49,8 +49,8 @@ class LinkDAO extends DAO
         if(array_key_exists('user_id', $row)) {
             // Find and set the associated author
             $userId = $row['user_id'];
-            $user = $this->userDAO->find($userId);
-            $link->setAuthor($user);
+//            $user = $this->userDAO->find($link->getId());
+//            $link->setAuthor($user);
         }
         
         return $link;

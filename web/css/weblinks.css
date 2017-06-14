@@ -6,4 +6,10 @@ body {
     border-top: 2px inset darkslategray;
     text-align: center;
     margin-top: 25px;
+    padding-top: 25px;
+}
+
+.adminTable {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
